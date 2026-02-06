@@ -56,7 +56,7 @@ Steps:
 
 ## 👤 Author
 
-**Brevan Kumar Goud**
+**Revan Kumar Goud Bommagoni**
 
 ---
 
