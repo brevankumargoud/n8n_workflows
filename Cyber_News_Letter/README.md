@@ -99,7 +99,7 @@ That’s it — you’ll start receiving daily cyber news automatically.
 ## 🙌 Author
 
 Created and maintained by **Revan Kumar Goud Bommagoni**  
-Focused on cybersecurity automation, offensive security, and AI-driven workflows.
+Focused on Offensive security, Cybersecurity Automation, and AI-driven workflows.
 
 ---
 
