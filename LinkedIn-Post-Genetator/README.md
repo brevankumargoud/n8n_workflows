@@ -29,26 +29,26 @@ state checks --- not sub-workflows.
 
 ## 🧠 Architecture Flow
 
-Google Sheets Trigger (Row Added)
-↓
-Writer (AI Content Generation - Gemini)
-↓
-Primary_Output (Update "Output" column)
-↓
-Wait (Polling Delay)
-↓
-Get (Fetch latest row data)
-↓
-Editor (Apply modifications if any)
-↓
-Update Row ("Modified Output")
-↓
-IF Approval == Approved
-↙ ↘
-Wait Again Merge Image + Text
-↓
-LinkedIn Post
-↓
+Google Sheets Trigger (Row Added)\
+↓\
+Writer (AI Content Generation - Gemini)\
+↓\
+Primary_Output (Update "Output" column)\
+↓\
+Wait (Polling Delay)\
+↓\
+Get (Fetch latest row data)\
+↓\
+Editor (Apply modifications if any)\
+↓\
+Update Row ("Modified Output")\
+↓\
+IF Approval == Approved\
+↙ ↘\
+Wait Again Merge Image + Text\
+↓\
+LinkedIn Post\
+↓\
 Update Status = POSTED
 
 ------------------------------------------------------------------------
