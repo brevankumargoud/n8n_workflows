@@ -138,11 +138,11 @@ Updates:
 
 ## 🎯 Key Design Principles
 
-✅ State-Driven Publishing
-✅ Human-in-the-Loop AI
-✅ Controlled Editing Logic
-✅ Single Workflow Architecture
-✅ Automated Publishing After Approval
+✅ State-Driven Publishing\
+✅ Human-in-the-Loop AI\
+✅ Controlled Editing Logic\
+✅ Single Workflow Architecture\
+✅ Automated Publishing After Approval\
 
 ------------------------------------------------------------------------
 
@@ -195,3 +195,8 @@ Updates:
 
 Built by Revan Kumar Goud Bommagoni
 Passionate about Offensive Cybersecurity, automation-driven tooling, and building intelligent security systems.
+
+------------------------------------------------------------------------
+
+⭐ If you find this workflow useful, feel free to star the repository and adapt it for your own use.
+
