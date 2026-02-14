@@ -7,6 +7,11 @@
 This workflow is designed to save time, reduce information overload, and provide a concise daily overview of important cybersecurity developments.
 
 ---
+## 🧠 Workflow Architecture
+
+![Workflow Architecture](assets/Workflow.jpeg)
+
+---
 
 ## 🚀 What This Workflow Does
 
@@ -63,6 +68,11 @@ Each email includes:
 - 3–4 sentence summaries for each article
 - Direct links to read full articles
 - Clean and readable formatting for quick consumption
+
+---
+## 🧠 Workflow Architecture
+
+![Sample_mail](assets/Mail.png)
 
 ---
 
