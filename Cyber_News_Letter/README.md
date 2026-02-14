@@ -72,7 +72,7 @@ Each email includes:
 ---
 ## 🧠 Workflow Architecture
 
-![Sample_mail](assets/Mail.png)
+![Sample_mail](assets/Mail.jpeg)
 
 ---
 
