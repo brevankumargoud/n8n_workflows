@@ -193,7 +193,7 @@ Updates:
 
 ## 👨‍💻 Author
 
-Built by Revan Kumar Goud Bommagoni \
+Built by **Revan Kumar Goud Bommagoni** \
 Passionate about Offensive Cybersecurity, automation-driven tooling, and building intelligent security systems.
 
 ------------------------------------------------------------------------
