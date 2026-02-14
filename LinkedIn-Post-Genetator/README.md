@@ -82,7 +82,6 @@ Update Status = POSTED
 -   Analyzes:
     -   Description
     -   GitHub link
-    -   Image context
 -   Determines:
     -   Project OR Certificate
     -   Domain (Cybersecurity / AI / Web / DevOps / etc.)
@@ -113,7 +112,7 @@ Condition:
 
     Approval == "Approved"
 
-If FALSE → Loop back to Wait
+If FALSE → Loop back to wait and apply the modifications given by the user
 If TRUE → Continue to publishing
 
 ### 7️⃣ Google Drive -- Download Image
