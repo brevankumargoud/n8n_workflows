@@ -15,11 +15,11 @@ publishes only after approval.
 This workflow automates the complete lifecycle of LinkedIn content
 creation:
 
-1.  📝 Generate post using AI\
-2.  ✏️ Allow structured modifications\
-3.  ✅ Wait for approval\
-4.  🖼️ Attach image from Google Drive\
-5.  🚀 Publish to LinkedIn\
+1.  📝 Generate post using AI
+2.  ✏️ Allow structured modifications
+3.  ✅ Wait for approval
+4.  🖼️ Attach image from Google Drive
+5.  🚀 Publish to LinkedIn
 6.  📊 Update posting status in Google Sheets
 
 It is designed as a **single workflow**, using conditionals, loops, and
@@ -29,26 +29,26 @@ state checks --- not sub-workflows.
 
 ## 🧠 Architecture Flow
 
-Google Sheets Trigger (Row Added)\
-↓\
-Writer (AI Content Generation - Gemini)\
-↓\
-Primary_Output (Update "Output" column)\
-↓\
-Wait (Polling Delay)\
-↓\
-Get (Fetch latest row data)\
-↓\
-Editor (Apply modifications if any)\
-↓\
-Update Row ("Modified Output")\
-↓\
-IF Approval == Approved\
-↙ ↘\
-Wait Again Merge Image + Text\
-↓\
-LinkedIn Post\
-↓\
+Google Sheets Trigger (Row Added)
+↓
+Writer (AI Content Generation - Gemini)
+↓
+Primary_Output (Update "Output" column)
+↓
+Wait (Polling Delay)
+↓
+Get (Fetch latest row data)
+↓
+Editor (Apply modifications if any)
+↓
+Update Row ("Modified Output")
+↓
+IF Approval == Approved
+↙ ↘
+Wait Again Merge Image + Text
+↓
+LinkedIn Post
+↓
 Update Status = POSTED
 
 ------------------------------------------------------------------------
@@ -113,7 +113,7 @@ Condition:
 
     Approval == "Approved"
 
-If FALSE → Loop back to Wait\
+If FALSE → Loop back to Wait
 If TRUE → Continue to publishing
 
 ### 7️⃣ Google Drive -- Download Image
@@ -140,60 +140,60 @@ Updates:
 
 ## 🎯 Key Design Principles
 
-✅ State-Driven Publishing\
-✅ Human-in-the-Loop AI\
-✅ Controlled Editing Logic\
-✅ Single Workflow Architecture\
+✅ State-Driven Publishing
+✅ Human-in-the-Loop AI
+✅ Controlled Editing Logic
+✅ Single Workflow Architecture
 ✅ Automated Publishing After Approval
 
 ------------------------------------------------------------------------
 
 ## 🔐 Required Credentials
 
--   Google Sheets OAuth\
--   Google Drive OAuth\
--   Google Gemini API\
+-   Google Sheets OAuth
+-   Google Drive OAuth
+-   Google Gemini API
 -   LinkedIn OAuth2
 
 ------------------------------------------------------------------------
 
 ## 🛠 Technologies Used
 
--   n8n\
--   Google Sheets API\
--   Google Drive API\
--   Google Gemini (LLM)\
--   LinkedIn API\
--   Conditional Logic (IF nodes)\
+-   n8n
+-   Google Sheets API
+-   Google Drive API
+-   Google Gemini (LLM)
+-   LinkedIn API
+-   Conditional Logic (IF nodes)
 -   Merge node (Binary + JSON)
 
 ------------------------------------------------------------------------
 
 ## 🚀 How To Use
 
-1.  Import the workflow JSON into n8n.\
-2.  Configure credentials.\
-3.  Create Google Sheet with required columns.\
-4.  Add a new row with Description, Image link, and GitHub link.\
-5.  Wait for AI to generate Output.\
-6.  Add modifications (optional).\
-7.  Set Approval to `Approved`.\
-8.  Post gets published automatically.\
+1.  Import the workflow JSON into n8n.
+2.  Configure credentials.
+3.  Create Google Sheet with required columns.
+4.  Add a new row with Description, Image link, and GitHub link.
+5.  Wait for AI to generate Output.
+6.  Add modifications (optional).
+7.  Set Approval to `Approved`.
+8.  Post gets published automatically.
 9.  Status becomes `POSTED`.
 
 ------------------------------------------------------------------------
 
 ## 📌 Future Improvements
 
--   Auto hashtag analytics\
--   Time-based scheduling\
--   Engagement tracking\
--   Multi-account posting\
+-   Auto hashtag analytics
+-   Time-based scheduling
+-   Engagement tracking
+-   Multi-account posting
 -   Vector memory for brand tone
 
 ------------------------------------------------------------------------
 
 ## 👨‍💻 Author
 
-Built by Revan Kumar Goud Bommagoni\
-Focused on AI-driven automation and intelligent workflow systems.
+Built by Revan Kumar Goud Bommagoni
+Passionate about Offensive Cybersecurity, automation-driven tooling, and building intelligent security systems.
