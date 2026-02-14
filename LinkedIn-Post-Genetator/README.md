@@ -44,7 +44,7 @@ Editor (Apply modifications if any)\
 Update Row ("Modified Output")\
 ↓\
 IF Approval == Approved\
-↙ ↘\
+↙ ↘ \
 Wait Again Merge Image + Text\
 ↓\
 LinkedIn Post\
