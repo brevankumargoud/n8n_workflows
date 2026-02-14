@@ -55,18 +55,17 @@ Update Status = POSTED
 
 ## 📊 Google Sheets Structure
 
-  Column                 Purpose
-  ---------------------- --------------------------------------
-  Description            Project or Certificate description
-  Images                 Google Drive image link
-  Links                  GitHub repository link
-  Output                 AI-generated first draft
-  Modifications/If any   User refinement instructions
-  Modified Output        Final AI-refined content
-  Approval               Must be set to `Approved`
-  Status                 Updated to `POSTED` after publishing
+| Column                | Purpose                                   |
+|------------------------|-------------------------------------------|
+| Description            | Project or Certificate description        |
+| Images                 | Google Drive image link                  |
+| Links                  | GitHub repository link                   |
+| Output                 | AI-generated first draft                 |
+| Modifications/If any   | User refinement instructions              |
+| Modified Output        | Final AI-refined content                  |
+| Approval               | Must be set to `Approved`                 |
+| Status                 | Updated to `POSTED` after publishing      |
 
-------------------------------------------------------------------------
 
 ## 🔍 Detailed Node Explanation
 
