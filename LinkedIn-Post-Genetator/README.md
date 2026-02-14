@@ -9,6 +9,14 @@ formatted LinkedIn posts, allows controlled human refinement, and
 publishes only after approval.
 
 ------------------------------------------------------------------------
+## 🧠 Workflow Architecture
+
+![Workflow Architecture](assets/Workflow_Architecture.jpeg)
+
+_State-driven AI publishing pipeline with approval gating and conditional execution._
+
+
+------------------------------------------------------------------------
 
 ## 📌 Overview
 
