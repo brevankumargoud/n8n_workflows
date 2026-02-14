@@ -57,7 +57,7 @@ Update Status = POSTED
 
   Column                 Purpose
   ---------------------- --------------------------------------
-  Description            Project / Certificate description
+  Description            Project or Certificate description
   Images                 Google Drive image link
   Links                  GitHub repository link
   Output                 AI-generated first draft
