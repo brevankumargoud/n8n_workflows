@@ -43,15 +43,16 @@ Each workflow is typically organized into its own folder containing:
 
 ## 🏗️ Workflow Structure
 
+```
 n8n-workflows/
 │
 ├── Workflow-Name/
-│ ├── workflow.json
-│ ├── README.md
-│ └── assets/
+│   ├── workflow.json
+│   ├── README.md
+│   └── assets/
 │
 └── ...
-
+```
 
 This modular structure ensures clarity, maintainability, and scalability as the repository grows.
 
