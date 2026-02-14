@@ -74,7 +74,10 @@ Update Status = POSTED
 | Approval               | Must be set to `Approved`                 |
 | Status                 | Updated to `POSTED` after publishing      |
 
-
+![Workflow Architecture](assets/S1.jpeg)
+---
+![Workflow Architecture](assets/S2.jpeg)
+---
 ## 🔍 Detailed Node Explanation
 
 ### 1️⃣ Google Sheets Trigger
