@@ -31,7 +31,10 @@ No uncontrolled execution.
 Everything is state-gated.
 
 ---
+## 🧠 Workflow Architecture
 
+![Workflow Architecture](assets/Workflow.jpeg)
+---
 ## 🧩 High-Level Architecture Flow
 
 ```
@@ -136,6 +139,11 @@ No manual parsing required.
 | Approval               | Must equal `Approved` |
 | Status                 | Set to `POSTED` after publish |
 
+---
+## 🧠 Workflow Architecture
+
+![Google Sheets1](assets/S1.jpeg)
+![Google Sheets2](assets/S2.jpeg)
 ---
 
 ## 🧠 AI Layer Breakdown
