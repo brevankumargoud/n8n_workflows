@@ -140,9 +140,9 @@ No manual parsing required.
 | Status                 | Set to `POSTED` after publish |
 
 ---
-## 🧠 Workflow Architecture
 
 ![Google Sheets1](assets/S1.jpeg)
+---
 ![Google Sheets2](assets/S2.jpeg)
 ---
 
