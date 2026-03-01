@@ -1,213 +1,245 @@
-# 🚀 LinkedIn Post Generator -- n8n Workflow
+# 🚀 LinkedIn Post Creator — n8n State-Driven Automation Workflow
 
-An AI-powered, state-driven LinkedIn post automation system built using
-**n8n**, **Google Sheets**, **Google Gemini**, **Google Drive**, and
-**LinkedIn API**.
+An advanced, AI-powered, **state-controlled LinkedIn publishing pipeline** built using:
 
-This workflow transforms structured sheet inputs into professionally
-formatted LinkedIn posts, allows controlled human refinement, and
-publishes only after approval.
+**n8n • Google Sheets • Google Gemini • Google Drive • LinkedIn API**
 
-------------------------------------------------------------------------
-## 🧠 Workflow Architecture
+This workflow enforces structured content generation, precision editing, multi-stage approval validation, and controlled publishing using a single orchestrated workflow architecture.
 
-![Workflow Architecture](assets/Workflow_Architecture.jpeg)
+---
 
-_State-driven AI publishing pipeline with approval gating and conditional execution._
+## 🧠 Core Design Philosophy
 
+This is not a simple automation.
 
-------------------------------------------------------------------------
+It is a **state machine built inside n8n**.
 
-## 📌 Overview
+The workflow:
 
-This workflow automates the complete lifecycle of LinkedIn content
-creation:
+- Generates content
+- Waits
+- Re-checks sheet state
+- Applies modifications precisely
+- Validates approval
+- Re-validates before publishing
+- Merges binary + text
+- Publishes
+- Marks final status
 
-1.  📝 Generate post using AI
-2.  ✏️ Allow structured modifications
-3.  ✅ Wait for approval
-4.  🖼️ Attach image from Google Drive
-5.  🚀 Publish to LinkedIn
-6.  📊 Update posting status in Google Sheets
+No blind publishing.  
+No uncontrolled execution.  
+Everything is state-gated.
 
-It is designed as a **single workflow**, using conditionals, loops, and
-state checks --- not sub-workflows.
+---
 
-------------------------------------------------------------------------
+## 🧩 High-Level Architecture Flow
 
-## 🧠 Architecture Flow
+```
+Google Sheets Trigger (Row Added)
+        ↓
+Writer (Gemini – Structured Generation Engine)
+        ↓
+Primary_Output (Write to "Output")
+        ↓
+Wait (10s polling delay)
+        ↓
+Get (Fetch Approval status)
+        ↓
+IF Approval == Approved?
 
-Google Sheets Trigger (Row Added)\
-↓\
-Writer (AI Content Generation - Gemini)\
-↓\
-Primary_Output (Update "Output" column)\
-↓\
-Wait (Polling Delay)\
-↓\
-Get (Fetch latest row data)\
-↓\
-Editor (Apply modifications if any)\
-↓\
-Update Row ("Modified Output")\
-↓\
-IF Approval == Approved\
-↙️ ↘️\
-Wait Again Merge Image + Text\
-↓\
-LinkedIn Post\
-↓\
+If FALSE →
+    Get1 (Fetch Output + Modifications)
+    Editor (Precision modification engine)
+    Update Row
+    IF1 (Approval re-check)
+        If FALSE → Wait again (loop)
+        If TRUE → Continue
+
+If TRUE → Continue
+
+        ↓
+Get2 (Fetch Final Modified Output)
+        ↓
+Download Image (Drive ID regex parsing)
+        ↓
+Merge (Combine binary + JSON by position)
+        ↓
+LinkedIn Create Post (IMAGE + PUBLIC)
+        ↓
 Update Status = POSTED
+```
 
-------------------------------------------------------------------------
+---
+
+## 🔁 What Changed in This Version
+
+### ✅ Dual Approval Gate
+
+Approval is checked:
+1. Before modification processing  
+2. After modification processing  
+
+This prevents:
+- Accidental publishing
+- Stale state execution
+- Partial edit publishing
+
+---
+
+### ✅ True Loop-Based State Polling
+
+If `Approval ≠ "Approved"`:
+
+Workflow cycles:
+
+```
+Wait → Get → IF → Edit → Re-check → Loop
+```
+
+It behaves like a controlled polling engine.
+
+---
+
+### ✅ Binary + JSON Merge Strategy
+
+**Merge Node Configuration:**
+
+- Mode: Combine  
+- Combine By: Position  
+- Clash Handling: Add Suffix  
+
+Ensures:
+- Text payload remains intact  
+- Image binary remains intact  
+- No overwrite collision  
+
+---
+
+### ✅ Regex-Based Dynamic Drive File Extraction
+
+The Google Drive node extracts the file ID dynamically from the sheet-provided URL using regex.
+
+No manual parsing required.
+
+---
 
 ## 📊 Google Sheets Structure
 
-| Column                | Purpose                                   |
-|------------------------|-------------------------------------------|
-| Description            | Project or Certificate description        |
-| Images                 | Google Drive image link                  |
-| Links                  | GitHub repository link                   |
-| Output                 | AI-generated first draft                 |
-| Modifications/If any   | User refinement instructions              |
-| Modified Output        | Final AI-refined content                  |
-| Approval               | Must be set to `Approved`                 |
-| Status                 | Updated to `POSTED` after publishing      |
+| Column                | Purpose |
+|------------------------|----------|
+| Description            | Core source of truth for content |
+| Images                 | Google Drive share link |
+| Links                  | GitHub repository link |
+| Output                 | First AI-generated draft |
+| Modifications/If any   | Explicit edit instructions |
+| Modified Output        | Final precision-edited version |
+| Approval               | Must equal `Approved` |
+| Status                 | Set to `POSTED` after publish |
 
-![Workflow Architecture](assets/S1.jpeg)
 ---
-![Workflow Architecture](assets/S2.jpeg)
+
+## 🧠 AI Layer Breakdown
+
+### ✍ Writer Node (Gemini)
+
+- Detects post type (Project / Certificate)
+- Detects domain (Cyber / AI / DevOps / etc.)
+- Applies structured formatting rules
+- Controls emoji usage by domain
+- Writes to `Output`
+
 ---
-## 🔍 Detailed Node Explanation
 
-### 1️⃣ Google Sheets Trigger
+### 🧩 Editor Node (Gemini – Precision Mode)
 
--   Event: `rowAdded`
--   Polls every minute
--   Activates when new content is added
+This is not a rewriter.
 
-### 2️⃣ Writer (Gemini LLM)
+It follows strict logic:
 
--   Uses Google Gemini Chat Model
--   Analyzes:
-    -   Description
-    -   GitHub link
--   Determines:
-    -   Project OR Certificate
-    -   Domain (Cybersecurity / AI / Web / DevOps / etc.)
--   Generates structured LinkedIn-ready content
--   Writes to `Output` column
+- If no modifications → return output EXACTLY  
+- If modifications exist → apply ONLY requested changes  
 
-### 3️⃣ Wait Node
+Preserves:
+- Structure  
+- Emojis  
+- Headings  
+- Hashtags  
+- Tone  
 
-Introduces a delay before checking for modifications or approval.
-Enables manual review and prevents accidental publishing.
+Acts like a diff-based refinement layer.
 
-### 4️⃣ Get Node
+---
 
-Fetches updated row data including: - Output - Modifications - Approval
-status
+## 🛠 Nodes Used
 
-### 5️⃣ Editor (Gemini LLM -- Precision Mode)
+- Google Sheets Trigger  
+- Google Sheets (Read / Update)  
+- Wait Node  
+- IF Node (x2)  
+- Gemini Chat Model (x2)  
+- Google Drive Download  
+- Merge (Binary + JSON)  
+- LinkedIn Create Post  
 
--   Returns content exactly as-is if no modification is given
--   Applies only explicitly mentioned changes
--   Preserves structure, emojis, formatting
--   Avoids unnecessary rewriting
--   Writes result to `Modified Output`
-
-### 6️⃣ IF Node (Approval Gate)
-
-Condition:
-
-    Approval == "Approved"
-
-If FALSE → Loop back to wait and apply the modifications given by the user
-If TRUE → Continue to publishing
-
-### 7️⃣ Google Drive -- Download Image
-
-Extracts image file using dynamic Drive file ID parsing.
-
-### 8️⃣ Merge Node
-
-Combines: - Modified Output (text) - Image binary data
-
-### 9️⃣ LinkedIn Node -- Create Post
-
--   Share category: IMAGE
--   Visibility: PUBLIC
--   Uses Modified Output as post text
-
-### 🔟 Final Google Sheets Update
-
-Updates:
-
-    Status = POSTED
-
-------------------------------------------------------------------------
-
-## 🎯 Key Design Principles
-
-✅ State-Driven Publishing\
-✅ Human-in-the-Loop AI\
-✅ Controlled Editing Logic\
-✅ Single Workflow Architecture\
-✅ Automated Publishing After Approval\
-
-------------------------------------------------------------------------
+---
 
 ## 🔐 Required Credentials
 
--   Google Sheets OAuth
--   Google Drive OAuth
--   Google Gemini API
--   LinkedIn OAuth2
+- Google Sheets OAuth2  
+- Google Drive OAuth2  
+- Google Gemini API  
+- LinkedIn OAuth2  
 
-------------------------------------------------------------------------
-
-## 🛠 Technologies Used
-
--   n8n
--   Google Sheets API
--   Google Drive API
--   Google Gemini (LLM)
--   LinkedIn API
--   Conditional Logic (IF nodes)
--   Merge node (Binary + JSON)
-
-------------------------------------------------------------------------
+---
 
 ## 🚀 How To Use
 
-1.  Import the workflow JSON into n8n.
-2.  Configure credentials.
-3.  Create Google Sheet with required columns.
-4.  Add a new row with Description, Image link, and GitHub link.
-5.  Wait for AI to generate Output.
-6.  Add modifications (optional).
-7.  Set Approval to `Approved`.
-8.  Post gets published automatically.
-9.  Status becomes `POSTED`.
+1. Import the JSON workflow into n8n  
+2. Configure credentials  
+3. Create Google Sheet with required columns  
+4. Add a new row (Description + Image link + GitHub link)  
+5. AI generates `Output`  
+6. Add modifications if needed  
+7. Set `Approval = Approved`  
+8. Post publishes automatically  
+9. Status updates to `POSTED`
 
-------------------------------------------------------------------------
+---
+
+## 🎯 Engineering Principles Demonstrated
+
+- State-driven workflow design  
+- Controlled human-in-the-loop AI  
+- Double validation gating  
+- Deterministic publishing  
+- Binary + JSON merging  
+- Poll-based state refresh  
+- Single-workflow orchestration  
+
+---
 
 ## 📌 Future Improvements
 
--   Auto hashtag analytics
--   Time-based scheduling
--   Engagement tracking
--   Multi-account posting
--   Vector memory for brand tone
+- Engagement analytics tracking  
+- Scheduled publish windows  
+- Brand-tone memory layer  
+- Multi-account posting engine  
+- Version history logging  
 
-------------------------------------------------------------------------
+---
 
 ## 👨‍💻 Author
 
-Built by **Revan Kumar Goud Bommagoni** \
-Passionate about Offensive Cybersecurity, automation-driven tooling, and building intelligent security systems.
+Built by **Revan Kumar Goud Bommagoni**
 
-------------------------------------------------------------------------
+Offensive Cybersecurity Focused.  
+Automation Architect.  
+Systematic Builder.
 
-⭐ If you find this workflow useful, feel free to star the repository and adapt it for your own use.
+---
 
+## ⭐ Final Note
+
+This is not just a LinkedIn post generator.
+
+It is a structured publishing control system built inside n8n.
