@@ -1,0 +1,430 @@
+{
+  "name": "Alert_Sender",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -656,
+        -208
+      ],
+      "id": "27e96ab6-db2e-4de2-8047-9b85269cc7a3",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc",
+          "mode": "list",
+          "cachedResultName": "Hackathon",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Entries",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -432,
+        -208
+      ],
+      "id": "17484478-8d4a-417e-bf60-81ec387731b5",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2jJVwGgrBICJhN4B",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\n\nlet lastAlertRow = 0;\n\n// 1️⃣ Find the last row where Alert Sent = TRUE\nfor (const item of rows) {\n  const alertValue = String(item.json[\"Alert Sent\"]).trim().toLowerCase();\n\n  if (alertValue === \"true\") {\n    lastAlertRow = item.json.row_number;\n  }\n}\n\n// 2️⃣ Count identical fraud entries\nconst fraudCounts = {};\nconst lastRows = {};\n\nfor (const item of rows) {\n\n  const row = item.json;\n\n  // Skip rows before the last alert\n  if (row.row_number <= lastAlertRow) continue;\n\n  // Skip safe rows\n  if (String(row[\"Risk\"]).trim().toLowerCase() === \"safe\") continue;\n\n  const fraudType = row[\"Fraud Type\"];\n  const risk = row[\"Risk\"];\n\n  if (!fraudType) continue;\n\n  // Normalize fraud type format\n  const normalizedFraud = fraudType\n    .replace(/\\//g, \",\")\n    .split(\",\")\n    .map(t => t.trim())\n    .sort()\n    .join(\" + \");\n\n  // Create unique key (same fraud + same risk)\n  const key = `${normalizedFraud} | ${risk}`;\n\n  if (!fraudCounts[key]) {\n    fraudCounts[key] = 0;\n  }\n\n  fraudCounts[key]++;\n\n  // Track the latest row for this fraud\n  lastRows[key] = row.row_number;\n}\n\n// 3️⃣ Check if any fraud reached threshold\nlet triggerAlert = false;\nlet alertFraudType = null;\nlet alertCount = 0;\nlet alertRow = null;\n\nfor (const key in fraudCounts) {\n\n  if (fraudCounts[key] >= 5) {\n\n    triggerAlert = true;\n    alertFraudType = key;\n    alertCount = fraudCounts[key];\n    alertRow = lastRows[key];\n\n    break;\n  }\n\n}\n\n// 4️⃣ Return results for workflow branching\nreturn [{\n  trigger_alert: triggerAlert,\n  fraud_type: alertFraudType,\n  fraud_count: alertCount,\n  last_row_to_update: alertRow\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -208
+      ],
+      "id": "038b37d6-7ffa-4186-b63a-3aec87ffcc08",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ce2cb9be-c304-4f06-bd24-bb184657bdd8",
+              "leftValue": "={{ $json.trigger_alert }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        16,
+        -208
+      ],
+      "id": "e1f6188a-fe2a-4603-a8d7-6fee27a4fafc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        320,
+        16
+      ],
+      "id": "9aaf8a9d-bf25-4ba8-88db-2625e8131c00",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "qp8wkBC8GbBC1usM",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc",
+          "mode": "list",
+          "cachedResultName": "Hackathon",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Entries",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Alert Sent": "=True",
+            "row_number": "={{ $('If').item.json.last_row_to_update }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Time Stamp",
+              "displayName": "Time Stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fraud Type",
+              "displayName": "Fraud Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Risk",
+              "displayName": "Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Alert Sent",
+              "displayName": "Alert Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1264,
+        -208
+      ],
+      "id": "959183dc-ab4a-4acc-89c5-79537eca89de",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2jJVwGgrBICJhN4B",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1227646440431258",
+        "recipientPhoneNumber": "={{ $json.phone }}",
+        "textBody": "={{ $('Alert_Generator').item.json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        -208
+      ],
+      "id": "a474cb9e-1510-422a-b5d1-df0baf4e5376",
+      "name": "Send message1",
+      "webhookId": "223fc866-42de-42c2-ad82-dd7abb3793dd",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "5i0vfw4TDRYgsqOF",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\n\nreturn rows.map(item => {\n\n  const phone =\n    item.json.Phone ||\n    item.json[\"Phone Number\"] ||\n    item.json.phone;\n\n  return {\n    json: {\n      phone: String(phone).replace(/\\D/g,'')\n    }\n  };\n\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        -208
+      ],
+      "id": "fdefeae6-d05b-417a-bcf4-e8a0c5593eea",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Fraud Type: {{ $json.fraud_type }}\nReports Detected: {{$json.fraud_count}}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a cyber safety assistant responsible for generating community fraud alerts.\n\nWhen a scam pattern appears multiple times in a community, you must create a short WhatsApp alert message warning people about it.\n\nThe message should:\n\n• Start with ⚠ COMMUNITY FRAUD ALERT\n• Mention the fraud type detected\n• Explain briefly how the scam works\n• Warn users not to share OTP, PIN, bank details, or click suspicious links\n• Be short and easy for non-technical users\n• End with reporting information\n\nCybercrime Helpline: 1930\nReport Online: https://cybercrime.gov.in\n\nReturn only the alert message text."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        240,
+        -208
+      ],
+      "id": "ebb387c7-4e0e-44fb-939c-a34d73b0e09a",
+      "name": "Alert_Generator"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc",
+          "mode": "list",
+          "cachedResultName": "Hackathon",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1389588268,
+          "mode": "list",
+          "cachedResultName": "Users",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ryVP0v8HSZ8k4N430iQitHy-SNH-CNVpD7B-IfwOvGc/edit#gid=1389588268"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        -208
+      ],
+      "id": "9c6f1c6d-06b5-4a91-864c-a5d761d244e9",
+      "name": "Phone Numbers",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2jJVwGgrBICJhN4B",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Alert_Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Alert_Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Send message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert_Generator": {
+      "main": [
+        [
+          {
+            "node": "Phone Numbers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Phone Numbers": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "efb5fe14-3e92-4edb-bf94-b03061dcafc4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ee72cd451005e93516bb72a8ced8d3d6d2104ab8b2fabbe56f6f7f80e8175d26"
+  },
+  "id": "g1BJVpHEJ0o3uPbV",
+  "tags": []
+}
