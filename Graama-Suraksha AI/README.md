@@ -161,6 +161,8 @@ User → WhatsApp Bot → AI Fraud Detection → Fraud Logging → Alert System
 
 # 🧠 Main Workflow: `Fraud_Detection.json`
 
+![Alt Text](images/Main_Workflow.png)
+
 Responsible for:
 
 * Receiving WhatsApp messages
@@ -212,6 +214,8 @@ Activates the community alert system when fraud is detected.
 ---
 
 # 🚨 Secondary Workflow: `Alert_Sender.json`
+
+![Alt Text](images/Alert_Sender.png)
 
 Responsible for detecting **community-level fraud patterns**.
 
