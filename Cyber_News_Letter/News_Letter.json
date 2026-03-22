@@ -77,13 +77,13 @@
     },
     {
       "parameters": {
-        "sendTo": "brevankumargoud@gmail.com",
+        "sendTo": "<<YOUR EMAIL>>",
         "subject": "Today's Cyber News",
         "emailType": "text",
         "message": "={{ $json.text }}",
         "options": {
           "appendAttribution": false,
-          "ccList": "yarramradheshreddy@gmail.com"
+          "ccList": "<<EMAIL TO SEND AS CC>>"
         }
       },
       "type": "n8n-nodes-base.gmail",
